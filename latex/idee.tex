@@ -1,0 +1,77 @@
+\documentclass[10pt,a4paper]{scrartcl}
+\usepackage[utf8]{inputenc}
+\usepackage[francais]{babel}
+\usepackage{lmodern}
+\usepackage[T1]{fontenc}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{geometry}
+\usepackage{thmbox}
+\usepackage{enumerate}
+\usepackage{subcaption}
+
+\geometry{
+a4paper,
+body={150mm,260mm},
+left=30mm,top=15mm,
+headheight=7mm,headsep=4mm,
+marginparsep=4mm,
+marginparwidth=27mm}
+
+
+\pagestyle{empty}
+
+\providecommand{\abs}[1]{\left|#1\right|}
+\providecommand{\C}{\mathbb{C}}
+\providecommand{\R}{\mathbb{R}}
+\providecommand{\E}{\mathbb{E}}
+\providecommand{\Prob}{\mathbb{P}}
+\providecommand{\ii}{\mathrm{i}}
+\providecommand{\w}{\omega}
+\providecommand{\one}{\textbf{1}}
+
+\renewcommand{\S}{\textbf{S}^n}
+
+\newcommand{\norm}[1]{\Arrowvert#1\Arrowvert_2}
+
+\newcount\colveccount
+
+\newcommand*\colvec[1]{
+        \global\colveccount#1
+        \begin{pmatrix}
+        \colvecnext
+}
+\def\colvecnext#1{
+        #1
+        \global\advance\colveccount-1
+        \ifnum\colveccount>0
+                \\
+                \expandafter\colvecnext
+        \else
+                \end{pmatrix}
+        \fi
+}
+ 
+\author{Judith Abecassis \& Timothée Lacroix}
+
+\title{Idea for loss estimate}
+
+\begin{document}
+We have
+$$\E[O_{t,i} | \mathcal{F}_{t-1}] = p_{t,i} + (1-p_{t,i})\Prob(\exists j \in \mathcal{N}_i~s.t.~O_{t_j}=1 | \mathcal{F}_{t-1})$$
+With $\mathcal{N}_i$ the neighborhood of node $i$, and $\Prob(k)\sim k^{-3}$ the probability in the Barabasi-Albert model that a node has a degree of $k$.
+
+\begin{align*}
+  \Prob(\exists j \in \mathcal{N}_i~s.t.~O_{t_j}=1 | \mathcal{F}_{t-1}) &= \sum_{k=1}^{N-1} \Prob(k)\Prob(\exists j \in \mathcal{N}_i~s.t.~O_{t_j}=1 | \mathcal{F}_{t-1}, |\mathcal{N}_i=k|)\\
+    &= \sum_{k=1}^{N-1} \Prob(k) \binom{N-1}{k}^{-1} \sum_{\mathcal{K} = \mathcal{N}^k_i}\sum_{j \in \mathcal{K}} p_{t,j}  \\
+    &= \sum_{k=1}^{N-1} \Prob(k) \binom{N-1}{k}^{-1} \binom{N-2}{k-1}(1-p_{t,i})  \\
+    &= (1-p_{t,i})K(N)
+\end{align*}
+
+Where $K(N) = \sum_{k=1}^{N-1}\Prob(k)\frac{k(N-1-k)}{N-1}$\\
+
+These loss estimates should then be unbiased : 
+$$\hat{l}_{t,i} = \frac{O_{t,i}l_{t,i}}{p_{t,i}+(1-p_{t,i})^2K(N)}$$
+
+\end{document}

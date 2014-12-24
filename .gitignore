@@ -1,1 +1,5 @@
 *.pyc
+*.aux
+*.backup
+*.pdf
+*.log
