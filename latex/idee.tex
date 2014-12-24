@@ -64,8 +64,8 @@ With $\mathcal{N}_i$ the neighborhood of node $i$, and $\Prob(k)\sim k^{-3}$ the
 
 \begin{align*}
   \Prob(\exists j \in \mathcal{N}_i~s.t.~O_{t_j}=1 | \mathcal{F}_{t-1}) &= \sum_{k=1}^{N-1} \Prob(k)\Prob(\exists j \in \mathcal{N}_i~s.t.~O_{t_j}=1 | \mathcal{F}_{t-1}, |\mathcal{N}_i=k|)\\
-    &= \sum_{k=1}^{N-1} \Prob(k) \binom{N-1}{k}^{-1} \sum_{\mathcal{K} = \mathcal{N}^k_i}\sum_{j \in \mathcal{K}} p_{t,j}  \\
-    &= \sum_{k=1}^{N-1} \Prob(k) \binom{N-1}{k}^{-1} \binom{N-2}{k-1}(1-p_{t,i})  \\
+    &= \sum_{k=1}^{N-1} \Prob(k) \binom{N-1}{k}^{-1} \sum_{\mathcal{K} = \mathcal{N}^k_i}\sum_{j \in \mathcal{K}} p_{t,j} \quad \text{(each $p_{t,j}$ appears exactly $\binom{N-2}{k-1}$ times)} \\
+    &= \sum_{k=1}^{N-1} \Prob(k) \binom{N-1}{k}^{-1} \binom{N-2}{k-1}(1-p_{t,i}) \quad \text{(since $1-p_{t,i} = \sum_{i \neq j}p_{t,j}$)} \\
     &= (1-p_{t,i})K(N)
 \end{align*}
 
