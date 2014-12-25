@@ -3,7 +3,7 @@ import numpy as np
 class Losses:
     def __init__(self, arms):
         self.arms = arms
-        self.maxExpected = max(map(lambda x : x.mean, arms))
+        self.minExpected = min(map(lambda x : x.mean, arms))
 
     def getLosses(self):
         losses = np.zeros(len(self.arms))

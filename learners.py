@@ -43,7 +43,7 @@ class EXP3(BaseLearner):
 
     def observe(self, observed, losses, t):
         r = losses[self.chosen]
-        self.weights[self.chosen] *= np.exp(self.eta*r/self.probas[self.chosen])
+        self.weights[self.chosen] *= np.exp(-self.eta*r/self.probas[self.chosen])
         return
 
 
@@ -52,17 +52,14 @@ class DuplEXP3(BaseLearner):
         super(DuplEXP3, self).start(**kwargs)
         self.L = [np.zeros(self.arms), np.zeros(self.arms)]
         self.previous_O = np.zeros(self.arms)
-        self.previous_O[self.arms-1] = 1
-        self.previous_proba = np.zeros((1,self.arms))
-        self.previous_loss_estimates = np.zeros((1,self.arms))
+        self.previous_O[-1] = 1
+        
+        self.previous_proba = np.ones((2,self.arms))/self.arms
+        self.previous_loss_estimates = np.zeros((2,self.arms))
 
     def getArm(self, t):
-        # previous_proba has dimension t-1 * N
-        previous_proba = self.previous_proba[1:, :]
-        # previous_loss_estimates the same
-        previous_loss_estimates = self.previous_loss_estimates[1:, :]
-        tau = np.arange(1, t) % 2 == t % 2
-        tmp = np.sum(np.sum(previous_proba * previous_loss_estimates**2, 1)[tau])
+        tau = np.arange(0,t) % 2 == t % 2
+        tmp = np.sum(self.previous_proba[tau] * self.previous_loss_estimates[tau]**2)
         eta = np.sqrt(np.log(self.arms) / (self.arms**2 + tmp))
 
         self.weights = np.exp(-eta * self.L[t % 2]) / self.arms
@@ -73,7 +70,7 @@ class DuplEXP3(BaseLearner):
 
     def observe(self, observed, losses, t):
         M = np.argmax(self.previous_O)
-        K = np.random.geometric(self.probas, self.arms)
+        K = np.random.geometric(self.probas)
         G = np.minimum(K, M)
         lhat = losses * observed * G
         self.L[t % 2] += lhat
