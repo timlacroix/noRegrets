@@ -1,6 +1,6 @@
 import numpy as np
-from numpy.random import rand, multinomial
-from random import sample
+from numpy.random import rand, choice
+from random import shuffle
 
 
 class ERGraph:
@@ -15,35 +15,56 @@ class ERGraph:
 
 
 class BAGraph:
-    def __init__(self, arms, m):
+    def __init__(self, arms, m, m0, r=0.3):
+        """
+        arms : total number of nodes
+        m : number of connections each new node creates
+        m0 : initial graph size
+        r : initial graph sparsity
+        """
         self.arms = arms
+        if m > m0:
+            raise Exception("m > m0")
         self.m = m
+        self.m0 = m0
+
+
+    def addEdge(self, i, j):
+        self.adjacency[i,j] = 1
+        self.adjacency[j,i] = 1
+        self.nb_neighbors[i] += 1
+        self.nb_neighbors[j] += 1
 
     def makeGraph(self):
-        nodes = range(self.arms)
-        adjacency = np.zeros((1, 2))
-        nb_neighbors = np.zeros(self.arms)
-        initiation = sample(nodes, self.m+1)
-        for i in initiation:
-            nodes.pop(nodes.index(i))
-        for i in range(self.m):
-            adjacency = np.vstack((adjacency, (initiation[i], initiation[self.m]),
-                                  (initiation[self.m], initiation[i])))
-        nb_neighbors[initiation] = 1
-        nb_neighbors[initiation[self.m]] = self.m
-        while len(np.nonzero(nb_neighbors)[0]) < self.arms:
-            new_node = sample(nodes, 1)[0]
-            nodes.pop(nodes.index(new_node))
-            chosen = np.where(multinomial(self.m, nb_neighbors /
-                                          np.sum(nb_neighbors)))[0][0:self.m]
-            nb_neighbors[chosen] += 1
-            nb_neighbors[new_node] = self.m
+        self.nodes = range(self.arms)
+        shuffle(self.nodes)
+
+        self.adjacency = np.zeros((self.arms, self.arms))
+        self.nb_neighbors = np.zeros(self.arms)
+        
+        # create a random path first to connect the first m_0 nodes
+        for i in range(self.m0-1):
+            self.addEdge(i, i+1)
+        # add each edges with proba r
+        for i in range(self.m0):
+            for j in range(i+2,self.m0):
+                if rand() <= self.r:
+                    self.addEdge(i,j)
+        # add the others arms-m0 nodes
+        for cur in range(self.m0, self.arms):
+            chosen = choice(
+                cur,
+                size=self.m,
+                p=(self.nb_neighbors /np.sum(self.nb_neighbors))[:cur]
+            )
             for i in chosen:
-                adjacency = np.vstack((adjacency, (i, new_node), (new_node, i)))
-        self.adjacency = adjacency
+                self.addEdge(cur, i)
+
+        # SHUFFLE
+        self.adjacency = self.adjacency[self.nodes].T[self.nodes]
 
     def getObserved(self, pulled):
-        observed = np.zeros(self.arms)
+        self.makeGraph()
+        observed = self.adjacency[pulled,:]
         observed[pulled] = 1
-        observed[list(self.adjacency[self.adjacency[:, 0] == pulled][:, 1])] = 1
         return observed
