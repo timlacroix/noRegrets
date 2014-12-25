@@ -72,6 +72,11 @@ With $\mathcal{N}_i$ the neighborhood of node $i$, and $\Prob(k)\sim k^{-3}$ the
 Where $K(N) = \sum_{k=1}^{N-1}\Prob(k)\frac{k(N-1-k)}{N-1}$\\
 
 These loss estimates should then be unbiased : 
-$$\hat{l}_{t,i} = \frac{O_{t,i}l_{t,i}}{p_{t,i}+(1-p_{t,i})^2K(N)}$$
+$$\hat{l}_{t,i} = \frac{O_{t,i}l_{t,i}}{p_{t,i}+(1-p_{t,i})^2K(N)}$$ \\
+
+For K(N), we can either use : 
+$$ \Prob(k) = \frac{2m^2t}{m_0+t}k^{-3} $$
+Or, if we suppose the graph is in his asymptotic regime : 
+$$ \Prob(k) = \frac{k^{-3}}{\sum_{i=1}^{N-1}i^{-3}} $$
 
 \end{document}
