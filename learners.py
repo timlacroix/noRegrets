@@ -78,6 +78,24 @@ class DuplEXP3(BaseLearner):
         self.previous_loss_estimates = np.vstack((self.previous_loss_estimates, lhat))
         return lhat
 
+class BAEXP3(BaseLearner):
+    def __init__(self, gamma, eta, **kwargs):
+        super(BAEXP3, self).__init__(**kwargs)
+        self.gamma = gamma
+        self.eta = eta
+        self.setK(**kwargs)
 
+    def setK(self,arms):
+        n_pk = sum([x**(-3) for x in range(1, arms)])
+        self.K = sum([(x**(-3)/n_pk)*((x*(arms-1-x))/(arms-1)) for x in range(1, arms)])
 
+    def getArm(self, t):
+        self.probas = (1-self.gamma)*self.weights / sum(self.weights)
+        self.probas += np.ones(self.arms)*(self.gamma/self.arms)
+        self.chosen = np.where(multinomial(1, self.probas))[0][0]
+        return self.chosen
 
+    def observe(self, observed, losses, t):
+        estimated_loss = observed*losses/(self.probas + self.K*(1-self.probas)**2)
+        self.weights *= np.exp(-self.eta*estimated_loss)
+        return

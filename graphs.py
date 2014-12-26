@@ -27,6 +27,7 @@ class BAGraph:
             raise Exception("m > m0")
         self.m = m
         self.m0 = m0
+        self.r=r
 
 
     def addEdge(self, i, j):
