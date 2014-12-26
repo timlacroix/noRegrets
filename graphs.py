@@ -22,9 +22,11 @@ class BAGraph:
         m0 : initial graph size
         r : initial graph sparsity
         """
-        self.arms = arms
         if m > m0:
             raise Exception("m > m0")
+        if m0 > arms:
+            raise Exception("m0 > arms")
+        self.arms = arms
         self.m = m
         self.m0 = m0
         self.r=r
