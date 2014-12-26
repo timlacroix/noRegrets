@@ -1,5 +1,5 @@
 import numpy as np
-from numpy.random import multinomial
+from numpy.random import multinomial, randint
 
 
 class BaseLearner(object):
@@ -79,5 +79,31 @@ class DuplEXP3(BaseLearner):
         return lhat
 
 
+class EstimatingR(BaseLearner):
+    def __init__(self, k, C, graph, **kwargs):
+        super(EstimatingR, self).__init__(**kwargs)
+        self.k = k
+        self.C = C
+        self.graph = graph
 
-
+    def getEstimate(self):
+        j = 0
+        c = 0
+        M = np.zeros(self.k)
+        for t in range(self.C):
+            I = randint(self.arms)
+            Obs = self.graph.getObserved(I)
+            c += np.sum(Obs[list(range(self.arms).pop(I))])
+        if c/(self.C*(self.arms - 1)) <= 3/(2*self.arms):
+            return 0
+        else:
+            for t in range(self.C, T):
+                I = randint(self.arms)
+                Obs = self.graph.getObserved(I)
+                for i in range(self.arms):
+                    M[j] += int(i != I)
+                    j += Obs(i) * int(i != I)
+                    if j == k:
+                        return (np.max(M) + 1) ** (-1)
+                    else:
+                        M[j] = 0
