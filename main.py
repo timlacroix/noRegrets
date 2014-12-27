@@ -30,7 +30,6 @@ def applyLearner(learner, graph, losses, horizon=100, repeat=4, n_jobs=1):
 def estimateR(graph, T, losses):
     k = int(np.e * np.log(T) / 2) + 1
     C = int(2 * np.log(T) / graph.arms) + 1
-    print(C, k)
     j = 0
     c = 0
     M = np.zeros(k)
@@ -53,7 +52,6 @@ def estimateR(graph, T, losses):
                 M[j] += int(i != I)
                 j += Obs[i] * int(i != I)
                 if j == k:
-                    print(M)
                     return 1/(np.max(M) + 1), t+1, regret
 
 
@@ -74,6 +72,7 @@ def complete_algorithm(graph, losses, horizon=100, repeat=1):
             learner.start()
             regrets[repetition, it:horizon] = do_run(learner, graph, losses,
                                                      horizon=horizon-it)
+            print(learner.weights)
     return np.mean(np.cumsum(regrets, axis=1), axis=0)
 
 
@@ -126,12 +125,12 @@ plt.ylabel('cumulated regret', fontsize=20)
 
 plt.savefig('dupl_big_r.pdf')
 
-##
+## test of dupl exp 3
 n_arms = 20
 eps = 0.1
 n_iterations = 5000
-r = 0.5
-rep=200
+r = 0.8
+rep=100
 
 losses = Losses([Bernoulli(x) for x in [0.5] + [0.5+eps]*(n_arms-1)])
 
@@ -143,7 +142,7 @@ regrets = applyLearner(
     learner, graph, losses,
     horizon=n_iterations, repeat=rep
 )
-plt.figure(1)
+plt.figure(2)
 plt.plot(regrets, 'r-', label='EXP3', linewidth=2)
 
 plt.plot(rr, 'b-', label='DuplEXP3', linewidth=2)
@@ -151,6 +150,5 @@ plt.plot(rr, 'b-', label='DuplEXP3', linewidth=2)
 plt.legend(loc=2, fontsize=20)
 plt.xlabel('iterations', fontsize=20)
 plt.ylabel('cumulated regret', fontsize=20)
-plt.show()
 plt.savefig('complete_dupl_big_r' + str(r) + '.pdf')
 

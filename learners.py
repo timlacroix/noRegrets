@@ -121,14 +121,16 @@ class GeneralDuplExp3(BaseLearner):
         self.eta = np.sqrt(np.log(self.arms) / ((self.arms * self.A)**2))
 
     def end_episode_updates(self, j):
-        lhat = np.sum(self.G * np.sum(self.current_losses * self.current_O, 1))
+        lhat = self.G * np.sum(self.current_losses * self.current_O, 0)
         # we have set the Oji to be Oti, but weird
         self.L[(j - 1) % 2] += lhat
         self.previous_loss_estimates = np.vstack((self.previous_loss_estimates, lhat))
 
         tau = np.arange(0, j) % 2 == j % 2
         tm = np.sum(self.previous_proba[tau] * self.previous_loss_estimates[tau] ** 2)
+        print(tm)
         self.eta = np.sqrt(np.log(self.arms) / ((self.arms * self.A)**2 + tm))
+        print(self.eta)
         self.weights = np.exp(-self.eta * self.L[j % 2]) / self.arms
         self.probas = self.weights / sum(self.weights)
         self.previous_proba = np.vstack((self.previous_proba, self.probas))
@@ -140,7 +142,7 @@ class GeneralDuplExp3(BaseLearner):
 
     def getArm(self, t):
         j = int(t/self.A) + 1
-        if t == j * self.A:
+        if t == (j-1) * self.A:
             self.end_episode_updates(j)
         self.chosen = np.where(multinomial(1, self.probas))[0][0]
         return self.chosen
@@ -148,4 +150,9 @@ class GeneralDuplExp3(BaseLearner):
     def observe(self, observed, losses, t):
         estimated_loss = observed*losses*self.G
         self.weights *= np.exp(-self.eta*estimated_loss) / self.arms
+        subt = t % self.A
+        self.current_losses[subt, :] = losses
+        self.current_O[subt, :] = observed
+        self.previous_O_seconde[subt*(self.arms - 1): (subt+1) * (self.arms - 1)] = \
+            np.delete(observed, self.chosen)
         return
