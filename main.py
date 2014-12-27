@@ -1,6 +1,3 @@
-import os
-os.chdir('/Users/judith/Documents/MVA/reinforcement_learning/noRegrets')
-
 import numpy as np
 import matplotlib.pyplot as plt
 from joblib import Parallel, delayed
@@ -77,7 +74,7 @@ def complete_algorithm(graph, losses, horizon=100, repeat=1):
             learner.start()
             regrets[repetition, it:horizon] = do_run(learner, graph, losses,
                                                      horizon=horizon-it)
-        return np.mean(np.cumsum(regrets, axis=1), axis=0)
+    return np.mean(np.cumsum(regrets, axis=1), axis=0)
 
 
 n_arms = 30
@@ -129,21 +126,22 @@ plt.ylabel('cumulated regret', fontsize=20)
 
 plt.savefig('dupl_big_r.pdf')
 
-
+##
 n_arms = 20
 eps = 0.1
-n_iterations = 2000
+n_iterations = 5000
 r = 0.5
+rep=200
 
 losses = Losses([Bernoulli(x) for x in [0.5] + [0.5+eps]*(n_arms-1)])
 
 graph = ERGraph(arms=n_arms, r=r)
 
-rr = complete_algorithm(graph, losses, horizon=1000, repeat=50)
+rr = complete_algorithm(graph, losses, horizon=n_iterations, repeat=rep)
 learner = EXP3(gamma=0.01, eta=0.01, arms=n_arms)
 regrets = applyLearner(
     learner, graph, losses,
-    horizon=n_iterations, repeat=100
+    horizon=n_iterations, repeat=rep
 )
 plt.figure(1)
 plt.plot(regrets, 'r-', label='EXP3', linewidth=2)
@@ -153,6 +151,6 @@ plt.plot(rr, 'b-', label='DuplEXP3', linewidth=2)
 plt.legend(loc=2, fontsize=20)
 plt.xlabel('iterations', fontsize=20)
 plt.ylabel('cumulated regret', fontsize=20)
-
-plt.savefig('dupl_big_r' + str(r) + '.pdf')
+plt.show()
+plt.savefig('complete_dupl_big_r' + str(r) + '.pdf')
 

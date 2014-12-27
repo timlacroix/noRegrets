@@ -93,6 +93,11 @@ class BAEXP3(BaseLearner):
         self.probas = (1-self.gamma)*self.weights / sum(self.weights)
         self.probas += np.ones(self.arms)*(self.gamma/self.arms)
 
+    def observe(self, observed, losses, t):
+        estimated_loss = observed*losses/(self.probas + self.K*(1-self.probas)**2)
+        self.weights *= np.exp(-self.eta*estimated_loss)
+        return
+
 
 class GeneralDuplExp3(BaseLearner):
     def __init__(self, A, **kwargs):
@@ -108,8 +113,12 @@ class GeneralDuplExp3(BaseLearner):
         self.current_losses = np.zeros((self.A, self.arms))
         self.previous_O_seconde = np.zeros((self.A * (self.arms - 1) + 1))
         self.previous_O_seconde[-1] = 1
+        self.Mj = np.argmax(self.previous_O_seconde)
         self.previous_proba = np.ones((2, self.arms))/self.arms
         self.previous_loss_estimates = np.zeros((2, self.arms))
+        self.K = np.random.geometric(self.probas)
+        self.G = np.minimum(self.K, self.Mj)
+        self.eta = np.sqrt(np.log(self.arms) / ((self.arms * self.A)**2))
 
     def end_episode_updates(self, j):
         lhat = np.sum(self.G * np.sum(self.current_losses * self.current_O, 1))
@@ -119,15 +128,15 @@ class GeneralDuplExp3(BaseLearner):
 
         tau = np.arange(0, j) % 2 == j % 2
         tm = np.sum(self.previous_proba[tau] * self.previous_loss_estimates[tau] ** 2)
-        eta = np.sqrt(np.log(self.arms) / ((self.arms * self.A)**2 + tm))
-        self.weights = np.exp(-eta * self.L[j % 2]) / self.arms
+        self.eta = np.sqrt(np.log(self.arms) / ((self.arms * self.A)**2 + tm))
+        self.weights = np.exp(-self.eta * self.L[j % 2]) / self.arms
         self.probas = self.weights / sum(self.weights)
         self.previous_proba = np.vstack((self.previous_proba, self.probas))
         self.Mj = np.argmax(self.previous_O_seconde)
         self.previous_O_seconde = np.zeros((self.A * (self.arms - 1) + 1))
         self.previous_O_seconde[-1] = 1
         self.K = np.random.geometric(self.probas)
-        self.G = np.minimum(K, M)
+        self.G = np.minimum(self.K, self.Mj)
 
     def getArm(self, t):
         j = int(t/self.A) + 1
@@ -137,6 +146,6 @@ class GeneralDuplExp3(BaseLearner):
         return self.chosen
 
     def observe(self, observed, losses, t):
-        estimated_loss = observed*losses/(self.probas + self.K*(1-self.probas)**2)
-        self.weights *= np.exp(-self.eta*estimated_loss)
+        estimated_loss = observed*losses*self.G
+        self.weights *= np.exp(-self.eta*estimated_loss) / self.arms
         return
