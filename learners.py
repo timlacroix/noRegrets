@@ -97,7 +97,7 @@ class BAEXP3(BaseLearner):
         return self.chosen
 
     def observe(self, observed, losses, t):
-        estimated_loss = observed*losses/(self.probas + self.K*(1-self.probas)**2)
+        estimated_loss = observed*losses/(self.probas + self.K*(1-self.probas))
         self.weights *= np.exp(-self.eta*estimated_loss)
         return
 

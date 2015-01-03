@@ -59,22 +59,20 @@ marginparwidth=27mm}
 
 \begin{document}
 We have
-$$\E[O_{t,i} | \mathcal{F}_{t-1}] = p_{t,i} + (1-p_{t,i})\Prob(\exists j \in \mathcal{N}_i~s.t.~O_{t_j}=1 | \mathcal{F}_{t-1})$$
-With $\mathcal{N}_i$ the neighborhood of node $i$, and $\Prob(k)\sim k^{-3}$ the probability in the Barabasi-Albert model that a node has a degree of $k$.
+$$\E[O_{t,i} | \mathcal{F}_{t-1}] = p_{t,i} + (1-p_{t,i})\Prob(\exists j \in \mathcal{N}_i~s.t.~I_t=j | \mathcal{F}_{t-1}, I_t\neq i) = p_{t,i} + (1-p_{t,i})r_{BA} $$
+With $\mathcal{N}_i$ the neighborhood of node $i$, and $\Prob(k)$ the probability in the Barabasi-Albert model that a node has a degree of $k$.
 
 \begin{align*}
-  \Prob(\exists j \in \mathcal{N}_i~s.t.~O_{t_j}=1 | \mathcal{F}_{t-1}) &= \sum_{k=1}^{N-1} \Prob(k)\Prob(\exists j \in \mathcal{N}_i~s.t.~O_{t_j}=1 | \mathcal{F}_{t-1}, |\mathcal{N}_i=k|)\\
-    &= \sum_{k=1}^{N-1} \Prob(k) \binom{N-1}{k}^{-1} \sum_{\mathcal{K} = \mathcal{N}^k_i}\sum_{j \in \mathcal{K}} p_{t,j} \quad \text{(each $p_{t,j}$ appears exactly $\binom{N-2}{k-1}$ times)} \\
-    &= \sum_{k=1}^{N-1} \Prob(k) \binom{N-1}{k}^{-1} \binom{N-2}{k-1}(1-p_{t,i}) \quad \text{(since $1-p_{t,i} = \sum_{i \neq j}p_{t,j}$)} \\
-    &= (1-p_{t,i})K(N)
+  r_{BA} &= \sum_{k=1}^{N-1} \Prob(k)\Prob(\exists j \in \mathcal{N}_i~s.t.~I_{t}=j | \mathcal{F}_{t-1}, \card(\mathcal{N}_i=k|), I_{t}\neq i)\\
+    &= \sum_{k=1}^{N-1} \Prob(k) \binom{N-1}{k}^{-1} \sum_{\mathcal{K} = \mathcal{N}^k_i}\sum_{j \in \mathcal{K}} \Prob(I_t=j|I_t\neq i) \quad \text{(each $\Prob(I_t=j|I_t\neq i)$ appears exactly $\binom{N-2}{k-1}$ times)} \\
+    &= \sum_{k=1}^{N-1} \Prob(k) \binom{N-1}{k}^{-1} \binom{N-2}{k-1} \quad \text{(since $\sum_{i \neq j}\Prob(I_t=j|I_t\neq i)=1$)} \\
+    &= \sum_{k=1}^{N-1}\Prob(k)\frac{k(N-1-k)}{N-1}
 \end{align*}
 
-Where $K(N) = \sum_{k=1}^{N-1}\Prob(k)\frac{k(N-1-k)}{N-1}$\\
-
 These loss estimates should then be unbiased : 
-$$\hat{l}_{t,i} = \frac{O_{t,i}l_{t,i}}{p_{t,i}+(1-p_{t,i})^2K(N)}$$ \\
+$$\hat{l}_{t,i} = \frac{O_{t,i}l_{t,i}}{p_{t,i}+(1-p_{t,i})r_{BA}}$$ \\
 
-For K(N), we can either use : 
+For $r_{BA}$, we can either use : 
 $$ \Prob(k) = \frac{2m^2t}{m_0+t}k^{-3} $$
 Or, if we suppose the graph is in his asymptotic regime : 
 $$ \Prob(k) = \frac{k^{-3}}{\sum_{i=1}^{N-1}i^{-3}} $$

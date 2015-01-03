@@ -27,43 +27,50 @@ def applyLearner(learner, graph, losses, horizon=100, repeat=4, n_jobs=4):
     return np.mean(np.cumsum(regrets, axis=1), axis=0)
 
 
-n_arms=30
+n_arms=150
 eps=0.1
 
-n_iterations = 10
-n_repeat = 2
-n_jobs=2
+n_iterations = 20000
+n_repeat = 100
+n_jobs=20
 
 losses = Losses([Bernoulli(x) for x in [0.5] + [0.5+eps]*(n_arms-1)])
 
-graph = BAGraph(arms=n_arms, m=10, m0=20)
-
-
 ## EXP3
-learner = EXP3(gamma=0.01, eta=0.01, arms=n_arms)
-regrets = applyLearner(
-    learner, graph, losses,
-    horizon=n_iterations, repeat=n_repeat, n_jobs=n_jobs
-)
-plt.figure(1)
-plt.plot(regrets, 'r-', label='EXP3', linewidth=2)
+# learner = EXP3(gamma=0.01, eta=0.01, arms=n_arms)
+# regrets = applyLearner(
+#     learner, graph, losses,
+#     horizon=n_iterations, repeat=n_repeat, n_jobs=n_jobs
+# )
+# plt.figure(1)
+# plt.plot(regrets, 'r-', label='EXP3', linewidth=2)
 
 
 ## BAEXP3
-learner = BAEXP3(gamma=0.01, eta=0.01, arms=n_arms)
-regrets = applyLearner(
-    learner, graph, losses,
-    horizon=n_iterations, repeat=n_repeat, n_jobs=n_jobs
-)
-plt.plot(regrets,'k-',label='BAEXP3', linewidth=2)
+# learner = BAEXP3(gamma=0.01, eta=0.01, arms=n_arms)
+# regrets = applyLearner(
+#     learner, graph, losses,
+#     horizon=n_iterations, repeat=n_repeat, n_jobs=n_jobs
+# )
+# plt.plot(regrets,'k-',label='BAEXP3', linewidth=2)
 
-## DUPLEXP3
+## DUPLEXP3-BA
+graph = BAGraph(arms=150,m=15,m0=15,r=0.3)
 learner = DuplEXP3(arms=n_arms)
 regrets = applyLearner(
     learner, graph, losses,
     horizon=n_iterations, repeat=n_repeat, n_jobs=n_jobs
 )
-plt.plot(regrets, 'b-', label='DuplEXP3', linewidth=2)
+plt.plot(regrets, 'b-', label='DuplEXP3-BA', linewidth=2)
+
+## DUPLEXP3-ER
+graph = ERGraph(arms=n_arms, r=0.163) # approx same number of links
+learner = DuplEXP3(arms=n_arms)
+regrets = applyLearner(
+    learner, graph, losses,
+    horizon=n_iterations, repeat=n_repeat, n_jobs=n_jobs
+)
+plt.plot(regrets, 'r-', label='DuplEXP3-ER', linewidth=2)
 
 
 # upper_bound = 4 * np.sqrt((n_iterations / r + n_arms**2) * np.log(n_arms)) + \
