@@ -42,8 +42,7 @@ class EXP3(BaseLearner):
         return self.chosen
 
     def observe(self, observed, losses, t):
-        r = losses[self.chosen]
-        self.weights[self.chosen] *= np.exp(-self.eta*r/self.probas[self.chosen])
+        self.weights *= np.exp(-self.eta*losses*observed/self.probas)
         return
 
 

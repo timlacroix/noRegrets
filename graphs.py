@@ -38,7 +38,7 @@ class BAGraph:
         self.nb_neighbors[j] += 1
 
     def makeGraph(self):
-        self.nodes = range(self.arms)
+        self.nodes = list(range(self.arms))
         shuffle(self.nodes)
 
         self.adjacency = np.zeros((self.arms, self.arms))
