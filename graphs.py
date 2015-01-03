@@ -29,12 +29,11 @@ class BAGraph:
         self.arms = arms
         self.m = m
         self.m0 = m0
-        self.r=r
-
+        self.r = r
 
     def addEdge(self, i, j):
-        self.adjacency[i,j] = 1
-        self.adjacency[j,i] = 1
+        self.adjacency[i, j] = 1
+        self.adjacency[j, i] = 1
         self.nb_neighbors[i] += 1
         self.nb_neighbors[j] += 1
 
@@ -44,21 +43,21 @@ class BAGraph:
 
         self.adjacency = np.zeros((self.arms, self.arms))
         self.nb_neighbors = np.zeros(self.arms)
-        
+
         # create a random path first to connect the first m_0 nodes
         for i in range(self.m0-1):
             self.addEdge(i, i+1)
         # add each edges with proba r
         for i in range(self.m0):
-            for j in range(i+2,self.m0):
+            for j in range(i+2, self.m0):
                 if rand() <= self.r:
-                    self.addEdge(i,j)
+                    self.addEdge(i, j)
         # add the others arms-m0 nodes
         for cur in range(self.m0, self.arms):
             chosen = choice(
                 cur,
                 size=self.m,
-                p=(self.nb_neighbors /np.sum(self.nb_neighbors))[:cur]
+                p=(self.nb_neighbors / np.sum(self.nb_neighbors))[:cur]
             )
             for i in chosen:
                 self.addEdge(cur, i)
@@ -68,6 +67,6 @@ class BAGraph:
 
     def getObserved(self, pulled):
         self.makeGraph()
-        observed = self.adjacency[pulled,:]
+        observed = self.adjacency[pulled, :]
         observed[pulled] = 1
         return observed

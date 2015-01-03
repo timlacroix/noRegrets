@@ -53,12 +53,12 @@ class DuplEXP3(BaseLearner):
         self.L = [np.zeros(self.arms), np.zeros(self.arms)]
         self.previous_O = np.zeros(self.arms)
         self.previous_O[-1] = 1
-        
-        self.previous_proba = np.ones((2,self.arms))/self.arms
-        self.previous_loss_estimates = np.zeros((2,self.arms))
+        self.previous_proba = np.ones((2, self.arms))/self.arms
+        self.previous_loss_estimates = np.zeros((2, self.arms))
+        self.Mocc = list()
 
     def getArm(self, t):
-        tau = np.arange(0,t) % 2 == t % 2
+        tau = np.arange(0, t) % 2 == t % 2
         tmp = np.sum(self.previous_proba[tau] * self.previous_loss_estimates[tau]**2)
         eta = np.sqrt(np.log(self.arms) / (self.arms**2 + tmp))
 
@@ -69,7 +69,8 @@ class DuplEXP3(BaseLearner):
         return self.chosen
 
     def observe(self, observed, losses, t):
-        M = np.argmax(self.previous_O)
+        M = np.argmax(self.previous_O) + 1
+        self.Mocc.append(M)
         K = np.random.geometric(self.probas)
         G = np.minimum(K, M)
         lhat = losses * observed * G
@@ -86,9 +87,9 @@ class BAEXP3(BaseLearner):
         self.eta = eta
         self.setK(**kwargs)
 
-    def setK(self,arms):
+    def setK(self, arms):
         n_pk = sum([x**(-3) for x in range(1, arms)])
-        self.K = sum([(x**(-3)/n_pk)*((x*(arms-1-x))/(arms-1)) for x in range(1, arms)])
+        self.K = sum([(x**(-3)/n_pk)*(x/(arms-1)) for x in range(1, arms)])
 
     def getArm(self, t):
         self.probas = (1-self.gamma)*self.weights / sum(self.weights)
@@ -102,31 +103,60 @@ class BAEXP3(BaseLearner):
         return
 
 
-class EstimatingR(BaseLearner):
-    def __init__(self, k, C, graph, **kwargs):
-        super(EstimatingR, self).__init__(**kwargs)
-        self.k = k
-        self.C = C
-        self.graph = graph
+class GeneralDuplExp3(BaseLearner):
+    def __init__(self, A, **kwargs):
+        super(GeneralDuplExp3, self).__init__(**kwargs)
+        self.A = A
 
-    def getEstimate(self):
-        j = 0
-        c = 0
-        M = np.zeros(self.k)
-        for t in range(self.C):
-            I = randint(self.arms)
-            Obs = self.graph.getObserved(I)
-            c += np.sum(Obs[list(range(self.arms).pop(I))])
-        if c/(self.C*(self.arms - 1)) <= 3/(2*self.arms):
-            return 0
-        else:
-            for t in range(self.C, T):
-                I = randint(self.arms)
-                Obs = self.graph.getObserved(I)
-                for i in range(self.arms):
-                    M[j] += int(i != I)
-                    j += Obs(i) * int(i != I)
-                    if j == k:
-                        return (np.max(M) + 1) ** (-1)
-                    else:
-                        M[j] = 0
+    def start(self, **kwargs):
+        super(GeneralDuplExp3, self).start(**kwargs)
+        self.weights /= self.arms
+        self.probas = self.weights / sum(self.weights)
+        self.L = [np.zeros(self.arms), np.zeros(self.arms)]
+        self.current_O = np.zeros((self.A, self.arms))
+        self.current_losses = np.zeros((self.A, self.arms))
+        self.previous_O_seconde = np.zeros((self.A * (self.arms - 1) + 1))
+        self.previous_O_seconde[-1] = 1
+        self.Mj = np.argmax(self.previous_O_seconde) + 1
+        self.previous_proba = np.ones((2, self.arms))/self.arms
+        self.previous_loss_estimates = np.zeros((2, self.arms))
+        self.K = np.random.geometric(self.probas)
+        self.G = np.minimum(self.K, self.Mj)
+        self.eta = np.sqrt(np.log(self.arms) / ((self.arms * self.A)**2))
+        self.Mocc = list()
+
+    def end_episode_updates(self, j):
+        lhat = self.G * np.sum(self.current_losses * self.current_O, 0)
+        # we have set the Oji to be Oti, but weird
+        self.L[(j - 1) % 2] += lhat
+        self.previous_loss_estimates = np.vstack((self.previous_loss_estimates, lhat))
+
+        tau = np.arange(0, j) % 2 == j % 2
+        tm = np.sum(self.previous_proba[tau] * self.previous_loss_estimates[tau] ** 2)
+        self.eta = np.sqrt(np.log(self.arms) / ((self.arms * self.A)**2 + tm))
+        self.weights = np.exp(-self.eta * self.L[j % 2]) / self.arms
+        self.probas = self.weights / sum(self.weights)
+        self.previous_proba = np.vstack((self.previous_proba, self.probas))
+        self.Mj = np.argmax(self.previous_O_seconde) + 1
+        self.Mocc.append(self.Mj)
+        self.previous_O_seconde = np.zeros((self.A * (self.arms - 1) + 1))
+        self.previous_O_seconde[-1] = 1
+        self.K = np.random.geometric(self.probas)
+        self.G = np.minimum(self.K, self.Mj)
+
+    def getArm(self, t):
+        j = int(t/self.A) + 1
+        if t == (j-1) * self.A:
+            self.end_episode_updates(j)
+        self.chosen = np.where(multinomial(1, self.probas))[0][0]
+        return self.chosen
+
+    def observe(self, observed, losses, t):
+        estimated_loss = observed*losses*self.G
+        self.weights *= np.exp(-self.eta*estimated_loss) / self.arms
+        subt = t % self.A
+        self.current_losses[subt, :] = losses
+        self.current_O[subt, :] = observed
+        self.previous_O_seconde[subt*(self.arms - 1): (subt+1) * (self.arms - 1)] = \
+            np.delete(observed, self.chosen)
+        return
