@@ -75,12 +75,27 @@ We will be considering two models of random graphs.
 Let $0\leq p \leq 1$. $E=ER(p)$ is the graph such that $(i \rightarrow j) \in E$ with probability $p$. Such graphs have very well understood properties. Their expected independence number $\bar{\alpha}$ is ????????.
 Examples of ER graphs are given in Fig~\ref{er_ex}.
 
-\begin{figure}
- %\includegraphics{figures/er_graph_1.eps}
- ~
- %\includegraphics{figures/er_graph_2.eps}
+\begin{figure}[H]
+\begin{center}
+        \begin{subfigure}[b]{0.45\textwidth}
+                \includegraphics[width=\textwidth]{figures/ER_graph_1.pdf}
+                \caption{$p=0.1$}
+        \end{subfigure}
+	 \begin{subfigure}[b]{0.45\textwidth}
+                \includegraphics[width=\textwidth]{figures/ER_graph_2.pdf}
+                \caption{$p=0.2$}
+        \end{subfigure}
+	 \begin{subfigure}[b]{0.45\textwidth}
+                \includegraphics[width=\textwidth]{figures/ER_graph_5.pdf}
+                \caption{$p=0.5$}
+        \end{subfigure}
+	 \begin{subfigure}[b]{0.45\textwidth}
+                \includegraphics[width=\textwidth]{figures/ER_graph_8.pdf}
+                \caption{$p=0.8$}
+        \end{subfigure}
+\end{center}
+\caption{Examples of Erdos-Renyi graphs for various $p$}
  \label{er_ex}
- \caption{Examples of Erdos-Renyi graphs for various $p$}
 \end{figure}
 
 In our learning setting, this corresponds to the fact that when an action is chosen, other actions independently reveal their losses with a constant probability $p$.
@@ -93,26 +108,40 @@ $$P(k) \equiv k^{-3}~\text{as}~N\rightarrow \infty$$
 
 We used $m=m0=1$ to generate our graphs, leading to the exemples of graphs in figure~\ref{ba_ex}.
 
-\begin{figure}
- %\includegraphics{figures/ba_graph_1.eps}
- ~
- %\includegraphics{figures/ba_graph_2.eps}
+\begin{figure}[H]
+\begin{center}
+        \begin{subfigure}[b]{0.3\textwidth}
+                \includegraphics[width=\textwidth]{figures/BA_graph_1.pdf}
+                \caption{$p=0.1$}
+        \end{subfigure}
+	 \begin{subfigure}[b]{0.3\textwidth}
+                \includegraphics[width=\textwidth]{figures/BA_graph_2.pdf}
+                \caption{$p=0.2$}
+        \end{subfigure}
+	 \begin{subfigure}[b]{0.3\textwidth}
+                \includegraphics[width=\textwidth]{figures/BA_graph_5.pdf}
+                \caption{$p=0.2$}
+        \end{subfigure}
+\end{center}
+\caption{Examples of Barabási-Albert graphs.}
  \label{ba_ex}
- \caption{Examples of Barabási-Albert graphs.}
 \end{figure}
+
 
 In our learning setting, this models the phenomenon of preferential attachment in social networks.
 
 \section{ER graphs}
 \subsection{Idea of \textsc{DuplExp3} algorithm}
-Valko et al. ahev developped an algorithm to learn in the bandit with side informations context without any prior knowledge on the graph, including the parameter $p$. The trick used is to use geometric resampling to estimate the loss of each arm, which depends on $p$. This requires two independent EXP3 sub-algorithms to enforce the independence of geometric variables used for estimation. Compared to the classical EXP3 algorithm, the parameter $\eta$, which governs the compromise between exploration and exploitation is here computed to account for the fact that a proportion $p$ of losses is revealed at each iteration.
+Valko et al. ahev developped an algorithm to learn in the bandit with side informations context without any prior knowledge on the graph, including the parameter of the graph $p$. The main trick used is to directly estimate the quantity $\frac{1}{p_{t,i}+(1-p_{t,i})r}$ through two independent geometric variable. This allows to get good loss estimate, and with an adequately tuned learnin rate, to achieve a regret of $O(\sqrt{(T/r)\log N})$ for high $p$.
 
+
+In the general case, a separate 
 
 
 
 \subsection{Examples of regret curves on ER graphs and comparison with EXP3}
-
-\begin{figure}[h]
+First of all, we verify that our implementation of the algorithm DuplExp3 fares well against EXP3 on a reasonably sized graph. Fig~\ref{duplexp3vsexp3ER} shows the lower cumulated regret obtained by DuplExp3.
+\begin{figure}[H]
 \centering
 \includegraphics[height=6cm]{figures/50new_dupl_big_r05.pdf}
 \label{duplexp3vsexp3ER}
@@ -122,12 +151,13 @@ Valko et al. ahev developped an algorithm to learn in the bandit with side infor
 \section{BA graphs}
 \subsection{Empirical properties of BA graphs}
 \paragraph{Independence Number}
-Considering the induced hub structure on BA graphs, we conjecture that for the same edge proportion, the mean independence number is higher for BA graphs than for ER graphs. Our conjecture holds true empirically, as shown in Fig~\ref{mean_alpha_ba_er}.
+Considering the induced hub structure on BA graphs, we conjecture that for the same edge proportion, the mean independence number is higher for BA graphs than for ER graphs.  Our conjecture holds true empirically, as shown in Fig~\ref{mean_alpha_ba_er}.
 
-\begin{figure}
- %\includegraphics{figures/mean_alpha_ba_er.eps}
+\begin{figure}[H]
+\centering
+ \includegraphics[height=7cm]{figures/independance_number_com.pdf}
  \label{mean_alpha_ba_er}
- \caption{Average independence number for ER and BA graphs with equal edge proportion}
+ \caption{Average independence number for ER and BA graphs with equal edge proportion. We can see that the independence number of BA graphs stays above the independence number for ER graphs}
 \end{figure}
 
 \paragraph{Estimated r}
