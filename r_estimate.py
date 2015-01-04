@@ -1,10 +1,11 @@
 from graphs import *
 from joblib import Parallel, delayed
+from learners import *
 from numpy import random
 import numpy as np
 
 def get_M_BA(n_arms, m, m0):
-    g = BAGraph(arms=n_arms, m=m, m0=m0)
+    g = BAGraph(arms=n_arms, m=m, m0=m0, r=1)
     g. makeGraph()
     vector = np.append(g.getObserved(0),1)
     return np.argmax(vector[1:])+1
@@ -16,16 +17,16 @@ def get_R_ER(n_arms, r, n_estimate):
 
 if __name__=="__main__":
 
-    n_estimate = 500
-    n_arms = 250
-    m = 20
-    m0 = 20
+    n_estimate = 20000
+    n_arms = 500
+    m = 1
+    m0 = 2
 
     M_BA = Parallel(n_jobs=8, verbose=5)(delayed(get_M_BA)(
         n_arms=n_arms, m=m, m0=m0) for i in range(n_estimate)
     )
 
-    g = BAGraph(arms=n_arms, m=m, m0=m0)
+    g = BAGraph(arms=n_arms, m=m, m0=m0, r=1)
     g.makeGraph()
 
     real_r = sum(sum(g.adjacency))/(float(n_arms)*(n_arms-1))
@@ -36,6 +37,9 @@ if __name__=="__main__":
     print 'R_BA : {}'.format(1./np.mean(M_BA))
 
     print 'Real_R : {}'.format(real_r)
+    l=BAEXP3(0,0,arms=n_arms)
+
+    print 'Graph K : {}'.format(l.K)
 
     t = n_arms-m0
     formula_r = 2.*float(m*t)/((m0+t)*(m0+t-1))

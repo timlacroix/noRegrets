@@ -66,6 +66,34 @@ marginparwidth=27mm}
 applications en pub, full information vs vrai bandit truc
 \subsection{Different Graphs models}
 
+\subsubsection{Erdos-Renyi}
+Let $0\leq p \leq 1$. $E=ER(p)$ is the graph such that $(i \rightarrow j) \in E$ with probability $p$. Such graphs have very well understood properties. Their expected independence number $\bar{\alpha}$ is ????????.
+Examples of ER graphs are given in Fig~\ref{er_ex}.
+\begin{figure}
+ \includegraphics{figures/er_graph_1.eps}
+ ~
+ \includegraphics{figures/er_graph_2.eps}
+ \label{er_ex}
+ \caption{Examples of Erdos-Renyi graphs for various $p$}
+\end{figure}
+
+\subsubsection{Barabási-Albert}
+A Barabási-Albert (BA) graph is constructed dynamically by linking a new node to pre-existing nodes, with a probability linear in the degree of these nodes. As such, a BA graph is parametric, with parameters $m$ and $m0$, namely the number of links a node creates when joining the network, and the size of the starting graph.
+
+These graphs are scale-free, meaning that as they grow, their degree distribution follows a power law :
+$$P(k) \equiv k^{-3}~\text{as}~N\rightarrow \infty$$
+
+We used $m=m0=1$ to generate our graphs, leading to the exemples of graphs in figure~\ref{ba_ex}.
+
+\begin{figure}
+ \includegraphics{figures/ba_graph_1.eps}
+ ~
+ \includegraphics{figures/ba_graph_2.eps}
+ \label{ba_ex}
+ \caption{Examples of Barabási-Albert graphs.}
+\end{figure}
+
+
 \section{ER graphs}
 \subsection{idea of duplexp3}
 dire un peu que ça adapte le exploitation/exploration au r du graphe
@@ -73,14 +101,51 @@ dire un peu que ça adapte le exploitation/exploration au r du graphe
 \subsection{Examples of regret curves on ER graphs and comparison with EXP3}
 
 \section{BA graphs}
-\subsection{Interest of this graph model}
+\subsection{Empirical properties of BA graphs}
+\paragraph{Independence Number}
+Considering the induced hub structure on BA graphs, we conjecture that for the same edge proportion, the mean independence number is higher for BA graphs than for ER graphs. Our conjecture holds true empirically, as shown in Fig~\ref{mean_alpha_ba_er}.
 
-\subsection{An algorithm for BA graphs}
+\begin{figure}
+ \includegraphics{figures/mean_alpha_ba_er.eps}
+ \label{mean_alpha_ba_er}
+ \caption{Average independence number for ER and BA graphs with equal edge proportion}
+\end{figure}
 
-\subsection{Implementation and experimentation}
+\paragraph{Estimated r}
+proof of $\E[M_t] \leq \frac{1}{p}$ ??
+si pas proof et figure : figure
+si rien ... rien
+
+
+\subsection{Algorithms on BA graphs}
+\subsubsection{Asymptotic regime}
+As the number of nodes in a BA graph grows, the degree distribution becomes more and more independent of it's initial states and parameter. 
+\begin{figure}
+ \includegraphics{figures/dupl_er_ba.eps}
+ \label{dupl_er_ba}
+ \caption{Average regret for DuplExp3 on BA and ER graphs with the same proportion of edges.}
+\end{figure}
+\subsubsection{Finite regime}
+\paragraph{DuplExp3 on BA Graphs}
+To show that the conjecture above indeed lead to an increased regret for \emph{DuplExp3}, we compare regrets of our implementations on ER and BA graphs with the same proportion of edges. Results are shown in Fig~\ref{dupl_er_ba}
+
+\begin{figure}
+ \includegraphics{figures/dupl_er_ba.eps}
+ \label{dupl_er_ba}
+ \caption{Average regret for DuplExp3 on BA and ER graphs with the same proportion of edges.}
+\end{figure}
+
+We tried applying the asymptotic \emph{revelation probabillity} to small ($250$ nodes) BA graphs, which led to the plot in Fig~\ref{dupl_ba_finite_ba}.
+
+\begin{figure}
+ \includegraphics{figures/dupl_ba_finite_ba.eps}
+ \label{dupl_ba_finite_ba}
+ \caption{Average regret for DuplExp3 on BA and ER graphs with the same proportion of edges.}
+\end{figure}
+
 
 \section{Conclusion}
-
+gargl
 
 
 \end{document}
