@@ -108,6 +108,8 @@ In our learning setting, this models the phenomenon of preferential attachment i
 Valko et al. ahev developped an algorithm to learn in the bandit with side informations context without any prior knowledge on the graph, including the parameter $p$. The trick used is to use geometric resampling to estimate the loss of each arm, which depends on $p$. This requires two independent EXP3 sub-algorithms to enforce the independence of geometric variables used for estimation. Compared to the classical EXP3 algorithm, the parameter $\eta$, which governs the compromise between exploration and exploitation is here computed to account for the fact that a proportion $p$ of losses is revealed at each iteration.
 
 
+
+
 \subsection{Examples of regret curves on ER graphs and comparison with EXP3}
 
 \begin{figure}[h]
