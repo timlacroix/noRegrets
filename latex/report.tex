@@ -1,0 +1,86 @@
+\documentclass[10pt,a4paper]{scrartcl}
+\usepackage[utf8]{inputenc}
+\usepackage[francais]{babel}
+\usepackage{lmodern}
+\usepackage[T1]{fontenc}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{geometry}
+\usepackage{thmbox}
+\usepackage{enumerate}
+\usepackage{subcaption}
+
+\geometry{
+a4paper,
+body={150mm,260mm},
+left=30mm,top=15mm,
+headheight=7mm,headsep=4mm,
+marginparsep=4mm,
+marginparwidth=27mm}
+
+
+\pagestyle{empty}
+
+\providecommand{\abs}[1]{\left|#1\right|}
+\providecommand{\C}{\mathbb{C}}
+\providecommand{\R}{\mathbb{R}}
+\providecommand{\E}{\mathbb{E}}
+\providecommand{\Prob}{\mathbb{P}}
+\providecommand{\ii}{\mathrm{i}}
+\providecommand{\w}{\omega}
+\providecommand{\one}{\textbf{1}}
+
+\renewcommand{\S}{\textbf{S}^n}
+
+\newcommand{\norm}[1]{\Arrowvert#1\Arrowvert_2}
+
+\newcount\colveccount
+
+\newcommand*\colvec[1]{
+        \global\colveccount#1
+        \begin{pmatrix}
+        \colvecnext
+}
+\def\colvecnext#1{
+        #1
+        \global\advance\colveccount-1
+        \ifnum\colveccount>0
+                \\
+                \expandafter\colvecnext
+        \else
+                \end{pmatrix}
+        \fi
+}
+ 
+\author{Judith Abecassis \& Timothée Lacroix}
+
+\title{Random Graph Bandits with side information}
+
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+\subsection{Context}
+applications en pub, full information vs vrai bandit truc
+\subsection{Different Graphs models}
+
+\section{ER graphs}
+\subsection{idea of duplexp3}
+dire un peu que ça adapte le exploitation/exploration au r du graphe
+
+\subsection{Examples of regret curves on ER graphs and comparison with EXP3}
+
+\section{BA graphs}
+\subsection{Interest of this graph model}
+
+\subsection{An algorithm for BA graphs}
+
+\subsection{Implementation and experimentation}
+
+\section{Conclusion}
+
+
+
+\end{document}
