@@ -88,7 +88,7 @@ class BAEXP3(BaseLearner):
 
     def setK(self, arms):
         n_pk = sum([x**(-3) for x in range(1, arms)])
-        self.K = sum([(x**(-3)/n_pk)*(x/(arms-1)) for x in range(1, arms)])
+        self.K = 2*sum([(x**(-2)/n_pk) for x in range(1, arms)])/(arms-1)
 
     def getArm(self, t):
         self.probas = (1-self.gamma)*self.weights / sum(self.weights)
