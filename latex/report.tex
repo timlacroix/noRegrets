@@ -104,10 +104,18 @@ We used $m=m0=1$ to generate our graphs, leading to the exemples of graphs in fi
 In our learning setting, this models the phenomenon of preferential attachment in social networks.
 
 \section{ER graphs}
-\subsection{idea of duplexp3}
-dire un peu que ça adapte le exploitation/exploration au r du graphe
+\subsection{Idea of \textsc{DuplExp3} algorithm}
+Valko et al. ahev developped an algorithm to learn in the bandit with side informations context without any prior knowledge on the graph, including the parameter $p$. The trick used is to use geometric resampling to estimate the loss of each arm, which depends on $p$. This requires two independent EXP3 sub-algorithms to enforce the independence of geometric variables used for estimation. Compared to the classical EXP3 algorithm, the parameter $\eta$, which governs the compromise between exploration and exploitation is here computed to account for the fact that a proportion $p$ of losses is revealed at each iteration.
+
 
 \subsection{Examples of regret curves on ER graphs and comparison with EXP3}
+
+\begin{figure}[h]
+\centering
+\includegraphics[height=6cm]{figures/50new_dupl_big_r05.pdf}
+\label{duplexp3vsexp3ER}
+\caption{Comparison of cumulated regret over iterations for EXP3 and DuplExp3 algorithms for and ER graph of 50 nodes with parameter $p=0.5$ (repeated 100 times)}
+\end{figure}
 
 \section{BA graphs}
 \subsection{Empirical properties of BA graphs}
