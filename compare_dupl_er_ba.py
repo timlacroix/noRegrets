@@ -84,22 +84,23 @@ def do_run_dupl(learner,graph, losses, horizon=100):
 
 
 # BA !
-n_arms = 75
+n_arms = 50
 n_jobs = 6
 eps = 0.1
-n_iterations = 15000
-rep = 24
+n_iterations = 10000
+rep = 48
 
 losses = Losses([Bernoulli(x) for x in [0.5] + [0.5+eps]*(n_arms-1)])
 
 ## DuplEXP3 on BA Graph
-graph = BAGraph(arms=n_arms, m=1, m0=2, r=1)
+graph = BAGraph(arms=n_arms, m=7, m0=7, r=0.3)
 rr_ba = applyLearner(
     do_run_dupl, None, graph, losses,
     horizon=n_iterations, repeat=rep, n_jobs=n_jobs
 )
 
 ## DuplEXP3 on ER Graph
+graph.makeGraph()
 r = sum(sum(graph.adjacency))/(n_arms)*(n_arms-1)
 
 graph = ERGraph(arms=n_arms, r=r)
