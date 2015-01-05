@@ -74,7 +74,7 @@ We will be considering two models of random graphs.
 Let $0\leq p \leq 1$. $E=ER(p)$ is the graph such that $(i \rightarrow j) \in E$ with probability $p$. Such graphs have very well understood properties. Their expected independence number $\bar{\alpha}$ is ????????.
 Examples of ER graphs are given in Fig~\ref{er_ex}.
 
-\begin{figure}[H]
+\begin{figure}[hh!]
 \begin{center}
         \begin{subfigure}[b]{0.45\textwidth}
                 \includegraphics[width=\textwidth]{figures/ER_graph_1.pdf}
@@ -107,7 +107,7 @@ $$P(k) \equiv k^{-3}~\text{as}~N\rightarrow \infty$$
 
 We used $m=m0=1$ to generate our graphs, leading to the exemples of graphs in figure~\ref{ba_ex}.
 
-\begin{figure}[H]
+\begin{figure}[h!]
 \begin{center}
         \begin{subfigure}[b]{0.3\textwidth}
                 \includegraphics[width=\textwidth]{figures/BA_graph_1.pdf}
@@ -129,6 +129,16 @@ We used $m=m0=1$ to generate our graphs, leading to the exemples of graphs in fi
 
 In our learning setting, this models the phenomenon of preferential attachment in social networks.
 
+
+\subsection{Objectives of our work}
+
+In this project, we have worked on two different aspects of the topic. It is mostly based on the most recent results by Valko et al. (2015, under review).
+
+ The first one was to experimentally compare ad evaluate algorithms in the case of Erdos Renyi
+graphs with unknown edge distribution. The main challenge we have encountered about this is the computation time, that has prevented us to explore the performance in large scale problems.
+
+A second line of research is to explore an extension (or adaptation) of the DuplEXP3 algorithm to random graphs for Barabasi-Albert model, which models preferential attachment in social networks.
+
 \section{ER graphs}
 \subsection{Idea of \textsc{DuplExp3} algorithm}
 Valko et al. have developed an algorithm to learn in the bandit with side informations context without any prior knowledge on the graph, including the parameter of the graph $p$. The main trick used is to directly estimate the quantity $\frac{1}{p_{t,i}+(1-p_{t,i})r}$ through two independent geometric variable~\cite{neu2013efficient}. This allows to get good loss estimate, and with an adequately tuned learning rate, to achieve a regret of $O(\sqrt{(T/r)\log N})$ for high $r$.
@@ -142,7 +152,11 @@ In the general case, a separate algorithm to obtain a lower bound on $r$ is obta
 
 First of all, we verify that our implementation of the algorithm DuplExp3 fares well against EXP3~\cite{auer2002nonstochastic} on a reasonably sized graph. Fig~\ref{duplexp3vsexp3ER} shows the lower cumulated regret obtained by DuplExp3.
 
-\begin{figure}[H]
+To achieve this, we have implemented both EXP3 (used with parameters $\gamma=\eta=0.01$) and the universal DuplExp3 algorithm (for any value of $r$). The losses are Bernoulli variables, one with parameter $0.5$, and others with parameter $0.5 + \epsilon$ (we have set $\epsilon = 0.1$). In the EXP3 setting, the weights are observed for all observed losses. Both algorithms are run 100 times, and the cumulated regret is averaged over all the runs.
+
+As the computations time is prohibitive, it was not possible in this work to test on graphs with more nodes, but behaviour on small graphs already shows some interesting properties on the regret curves. 
+
+\begin{figure}[h!]
 \centering
 \includegraphics[height=6cm]{figures/50new_dupl_big_r05.pdf}
 \caption{Comparison of cumulated regret over iterations for EXP3 and DuplExp3 algorithms for and ER graph of 50 nodes with parameter $p=0.5$ (repeated 100 times)}
@@ -152,12 +166,12 @@ First of all, we verify that our implementation of the algorithm DuplExp3 fares 
 \section{BA graphs}
 \subsection{Empirical properties of BA graphs}
 \paragraph{Independence Number}
-Considering the induced hub structure on BA graphs, we conjecture that for the same edge proportion, the mean independence number is higher for BA graphs than for ER graphs.  Our conjecture holds true empirically, as shown in Fig~\ref{mean_alpha_ba_er}.
+Considering the induced hub structure on BA graphs, we conjecture that for the same edge proportion, the mean independence number is higher for BA graphs than for ER graphs.  Our conjecture holds true empirically, as shown in Fig~\ref{mean_alpha_ba_er}. 
 
-\begin{figure}[H]
+\begin{figure}[h!]
 \centering
  \includegraphics[height=7cm]{figures/independance_number_com.pdf}
- \caption{Average independence number for ER and BA graphs with equal edge proportion. We can see that the independence number of BA graphs stays above the independence number for ER graphs}
+ \caption{Average independence number for ER and BA graphs with equal edge proportion. We can see that the independence number of BA graphs stays above the independence number for ER graphs. The points and error bars correspond respectively to the mean and standard deviation obtained for 40 independant draws of a random graph of 50 nodes for each edge proportion, with varying edge proportion.}
  \label{mean_alpha_ba_er}
 \end{figure}
 
@@ -169,7 +183,7 @@ si rien ... rien
 
 \subsection{Algorithms on BA graphs}
 \subsubsection{Asymptotic regime}
-As the number of nodes in a BA graph grows, the degree distribution becomes more and more independent of it's initial states and parameter. We can then compute the revelation probability for an arm :
+As the number of nodes in a BA graph grows, the degree distribution becomes more and more independent of its initial states and parameter. We can then compute the revelation probability for an arm :
 $$r = \frac{\E[degree]}{N-1}$$
 By setting the losses of EXP3 to be 
 $$\hat{l}_{i,t} = \frac{O_{i,t}l_{i,t}}{p_{i,t}+(1-p_{i,t})r}$$
@@ -185,7 +199,7 @@ We then get non-biased loss estimates for the asymptotic regime.
 \paragraph{DuplExp3 on BA Graphs}
 To show that the conjecture on higher average independence numbers, and wrong revelation probability estimations indeed lead to an increased regret for \emph{DuplExp3}, we compare regrets of our implementations on ER and BA graphs with the same proportion of edges. Results are shown in Fig~\ref{dupl_er_ba}
 
-\begin{figure}[H]
+\begin{figure}[h!]
  %\includegraphics{figures/dupl_er_ba.eps}
  \caption{Average regret for DuplExp3 on BA and ER graphs with the same proportion of edges.}
  \label{dupl_er_ba}
@@ -193,7 +207,7 @@ To show that the conjecture on higher average independence numbers, and wrong re
 
 We tried applying the asymptotic \emph{revelation probabillity} to small ($250$ nodes) BA graphs, which led to the plot in Fig~\ref{dupl_ba_finite_ba}.
 
-\begin{figure}[H]
+\begin{figure}[h!]
 % \includegraphics{figures/dupl_ba_finite_ba.eps} % computed on godzilla
  \caption{Regret for multiple algorithms on BA graphs of size $250$.}
  \label{dupl_ba_finite_ba}
