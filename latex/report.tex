@@ -19,7 +19,6 @@ headheight=7mm,headsep=4mm,
 marginparsep=4mm,
 marginparwidth=27mm}
 
-
 \pagestyle{empty}
 
 \providecommand{\abs}[1]{\left|#1\right|}
@@ -63,9 +62,9 @@ marginparwidth=27mm}
 
 \section{Introduction}
 \subsection{Context}
-We are interested in the multi-armed bandit with side information setting. This consists in a sequential learning where, at each iteration, the learner chooses an arm, and observes losses of a number of arms. This is a generalization of two well-studied feedback settings, one in which the learner only knows the loss of the arm it pulled (bandit setting), and the other where the losses of all arms are revealed (full information setting). Full information occurs for example for trading on a stock market: all stock prices are known, and the bandit setting can be illustrated by electronic advertising. A situation of partial revelation of other arms could be considered in advertising in a social network.
+We are interested in the multi-armed bandit with side information setting \cite{mannor2011bandits, alon2013bandits, kocak2014efficient}. This consists in a sequential learning where, at each iteration, the learner chooses an arm, and observes losses of a number of arms. This is a generalization of two well-studied feedback settings~\cite{cesa2006prediction}, one in which the learner only knows the loss of the arm it pulled (bandit setting), and the other where the losses of all arms are revealed (full information setting). Full information occurs for example for trading on a stock market: all stock prices are known, and the bandit setting can be illustrated by electronic advertising. A situation of partial revelation of other arms could be considered in advertising in a social network.
 
-We are following the formalism previouly proposed by Mannor and Shamir (2011) in which side observations are modeled using a graph structure: each possible action is a node, and when an action is chosen, its loss and the losses of all its neighbours in the graph are revealed. Our work is in the line of Valko et al. (2015, under review), and considers the case where no previous information on the structure of the graph is known, and where partial observation is stochastic. 
+We are following the formalism previouly proposed by Mannor and Shamir (2011)~\cite{mannor2011bandits} in which side observations are modeled using a graph structure: each possible action is a node, and when an action is chosen, its loss and the losses of all its neighbours in the graph are revealed. Our work is in the line of Valko et al. (2015, under review), and considers the case where no previous information on the structure of the graph is known, and where partial observation is stochastic. 
 
 We will be considering two models of random graphs.
 
@@ -112,15 +111,15 @@ We used $m=m0=1$ to generate our graphs, leading to the exemples of graphs in fi
 \begin{center}
         \begin{subfigure}[b]{0.3\textwidth}
                 \includegraphics[width=\textwidth]{figures/BA_graph_1.pdf}
-                \caption{$p=0.1$}
+                \caption{$m=1$}
         \end{subfigure}
 	 \begin{subfigure}[b]{0.3\textwidth}
                 \includegraphics[width=\textwidth]{figures/BA_graph_2.pdf}
-                \caption{$p=0.2$}
+                \caption{$m=2$}
         \end{subfigure}
 	 \begin{subfigure}[b]{0.3\textwidth}
                 \includegraphics[width=\textwidth]{figures/BA_graph_5.pdf}
-                \caption{$p=0.2$}
+                \caption{$m=5$}
         \end{subfigure}
 \end{center}
 \caption{Examples of Barabási-Albert graphs.}
@@ -132,20 +131,22 @@ In our learning setting, this models the phenomenon of preferential attachment i
 
 \section{ER graphs}
 \subsection{Idea of \textsc{DuplExp3} algorithm}
-Valko et al. ahev developped an algorithm to learn in the bandit with side informations context without any prior knowledge on the graph, including the parameter of the graph $p$. The main trick used is to directly estimate the quantity $\frac{1}{p_{t,i}+(1-p_{t,i})r}$ through two independent geometric variable. This allows to get good loss estimate, and with an adequately tuned learnin rate, to achieve a regret of $O(\sqrt{(T/r)\log N})$ for high $p$.
+Valko et al. have developed an algorithm to learn in the bandit with side informations context without any prior knowledge on the graph, including the parameter of the graph $p$. The main trick used is to directly estimate the quantity $\frac{1}{p_{t,i}+(1-p_{t,i})r}$ through two independent geometric variable~\cite{neu2013efficient}. This allows to get good loss estimate, and with an adequately tuned learning rate, to achieve a regret of $O(\sqrt{(T/r)\log N})$ for high $r$.
 
 
-In the general case, a separate 
+In the general case, a separate algorithm to obtain a lower bound on $r$ is obtained. In case $r$ is to low to obtain a reasonable estimate of $\frac{1}{p_{t,i}+(1-p_{t,i})r}$, several iterations of the previously described algorithm are grouped together. Indeed, for a too low $r$, there might not be enough samples in a single round to guaratee a reliable estimation. 
 
 
 
 \subsection{Examples of regret curves on ER graphs and comparison with EXP3}
-First of all, we verify that our implementation of the algorithm DuplExp3 fares well against EXP3 on a reasonably sized graph. Fig~\ref{duplexp3vsexp3ER} shows the lower cumulated regret obtained by DuplExp3.
+
+First of all, we verify that our implementation of the algorithm DuplExp3 fares well against EXP3~\cite{auer2002nonstochastic} on a reasonably sized graph. Fig~\ref{duplexp3vsexp3ER} shows the lower cumulated regret obtained by DuplExp3.
+
 \begin{figure}[H]
 \centering
 \includegraphics[height=6cm]{figures/50new_dupl_big_r05.pdf}
-\label{duplexp3vsexp3ER}
 \caption{Comparison of cumulated regret over iterations for EXP3 and DuplExp3 algorithms for and ER graph of 50 nodes with parameter $p=0.5$ (repeated 100 times)}
+\label{duplexp3vsexp3ER}
 \end{figure}
 
 \section{BA graphs}
@@ -156,8 +157,8 @@ Considering the induced hub structure on BA graphs, we conjecture that for the s
 \begin{figure}[H]
 \centering
  \includegraphics[height=7cm]{figures/independance_number_com.pdf}
- \label{mean_alpha_ba_er}
  \caption{Average independence number for ER and BA graphs with equal edge proportion. We can see that the independence number of BA graphs stays above the independence number for ER graphs}
+ \label{mean_alpha_ba_er}
 \end{figure}
 
 \paragraph{Estimated r}
@@ -184,23 +185,26 @@ We then get non-biased loss estimates for the asymptotic regime.
 \paragraph{DuplExp3 on BA Graphs}
 To show that the conjecture on higher average independence numbers, and wrong revelation probability estimations indeed lead to an increased regret for \emph{DuplExp3}, we compare regrets of our implementations on ER and BA graphs with the same proportion of edges. Results are shown in Fig~\ref{dupl_er_ba}
 
-\begin{figure}
+\begin{figure}[H]
  %\includegraphics{figures/dupl_er_ba.eps}
- \label{dupl_er_ba}
  \caption{Average regret for DuplExp3 on BA and ER graphs with the same proportion of edges.}
+ \label{dupl_er_ba}
 \end{figure}
 
 We tried applying the asymptotic \emph{revelation probabillity} to small ($250$ nodes) BA graphs, which led to the plot in Fig~\ref{dupl_ba_finite_ba}.
 
-\begin{figure}
+\begin{figure}[H]
 % \includegraphics{figures/dupl_ba_finite_ba.eps} % computed on godzilla
- \label{dupl_ba_finite_ba}
  \caption{Regret for multiple algorithms on BA graphs of size $250$.}
+ \label{dupl_ba_finite_ba}
 \end{figure}
 
 
 \section{Conclusion}
 gargl
+
+\bibliographystyle{plain}
+\bibliography{bilbio}
 
 
 \end{document}

@@ -80,11 +80,11 @@ class DuplEXP3(BaseLearner):
 
 
 class BAEXP3(BaseLearner):
-    def __init__(self, gamma, eta, **kwargs):
+    def __init__(self, gamma, eta, K, **kwargs):
         super(BAEXP3, self).__init__(**kwargs)
         self.gamma = gamma
         self.eta = eta
-        self.setK(**kwargs)
+        self.K = K
 
     def setK(self, arms):
         n_pk = sum([x**(-3) for x in range(1, arms)])

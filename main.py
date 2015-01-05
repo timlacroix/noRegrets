@@ -9,9 +9,9 @@ from learners import *
 from graphs import *
 
 
-def do_run(learner, graph, losses, horizon=100):
+def do_run(learner, graph, losses, horizon=100, **kwargs):
     regrets = np.zeros(horizon)
-    learner.start()
+    learner.start(**kwargs)
     for t in range(horizon):
         current_losses = losses.getLosses()
         arm = learner.getArm(t)
@@ -26,9 +26,9 @@ def do_run(learner, graph, losses, horizon=100):
 
 
 def applyLearner(do_run_function, learner, graph, losses, horizon=100,
-                 repeat=4, n_jobs=4):
+                 repeat=4, n_jobs=4, **kwargs):
     regrets = Parallel(n_jobs=n_jobs, verbose=5)(
-        delayed(do_run_function)(learner, graph, losses, horizon)
+        delayed(do_run_function)(learner, graph, losses, horizon, **kwargs)
         for i in range(repeat)
     )
     # outputs = np.array(outputs)
@@ -64,7 +64,7 @@ def estimateR(graph, T, losses):
                     return 1/(np.max(M) + 1), t+1, regret
 
 
-def do_run_dupl(learner,graph, losses, horizon=100):
+def do_run_dupl(learner, graph, losses, horizon=100):
     r_, it, regret = estimateR(graph, horizon, losses)
     regrets = np.zeros(horizon)
     regrets[0:it] = regret
@@ -112,7 +112,6 @@ def update_online(old_mean, new_value, n, old_M2):
 
 
 
-
 # possible_arms = [50, 100, 1000]
 # possible_r = [0.3, 0.5, 0.7, 0.9]
 # for n_arms in possible_arms:
@@ -145,29 +144,22 @@ def update_online(old_mean, new_value, n, old_M2):
 #         plt.savefig(str(n_arms) + 'new_dupl_big_r' + str(r) + '.pdf')
 #         plt.close()
 
-# BA !
-n_arms = 250
-n_jobs = 6
-eps = 0.1
-n_iterations = 15000
-rep = 24
-
-losses = Losses([Bernoulli(x) for x in [0.5] + [0.5+eps]*(n_arms-1)])
-graph = BAGraph(arms=n_arms, m=1, m0=2, r=1)
+## BA !
+n_arms = 50
+graph = BAGraph(arms=n_arms, m=7, m0=7, r=0.3)
 
 learner = EXP3(gamma=0.01, eta=0.01, arms=n_arms)
+rr = applyLearner(do_run_dupl, learner, graph, losses,
+                  horizon=n_iterations, repeat=rep, n_jobs=1)
+
 regrets = applyLearner(
     do_run, learner, graph, losses,
-    horizon=n_iterations, repeat=rep, n_jobs=n_jobs
+    horizon=n_iterations, repeat=rep, n_jobs=1
 )
-
-rr = applyLearner(do_run_dupl, None, graph, losses,
-                  horizon=n_iterations, repeat=rep, n_jobs=n_jobs)
-
-learner = BAEXP3(gamma=0, eta=0.01, arms=n_arms)
+learner = BAEXP3(gamma=0.0, eta=0.01, arms=n_arms)
 other_regret = applyLearner(
     do_run, learner, graph, losses,
-    horizon=n_iterations, repeat=rep, n_jobs=n_jobs
+    horizon=n_iterations, repeat=rep, n_jobs=1
 )
 plt.figure(2)
 plt.plot(regrets, 'r-', label='EXP3-BA', linewidth=2)
@@ -178,6 +170,6 @@ plt.plot(other_regret, '-', label='BAEXP3-BA', linewidth=2, color='purple')
 plt.legend(loc=2, fontsize=20)
 plt.xlabel('iterations', fontsize=20)
 plt.ylabel('cumulated regret', fontsize=20)
-plt.savefig(str(n_arms) + 'new_BAdupl_big.pdf')
+plt.savefig(str(n_arms) + 'new_BAdupl_big_r' + str(r) + '.pdf')
 plt.close()
 
