@@ -200,18 +200,26 @@ We then get non-biased loss estimates for the asymptotic regime.
 To show that the conjecture on higher average independence numbers, and wrong revelation probability estimations indeed lead to an increased regret for \emph{DuplExp3}, we compare regrets of our implementations on ER and BA graphs with the same proportion of edges. Results are shown in Fig~\ref{dupl_er_ba}
 
 \begin{figure}[h!]
- \includegraphics{figures/50compare_dupl_er_ba.pdf}
+\centering
+ \includegraphics[height=7cm]{figures/50compare_dupl_er_ba.pdf}
  \caption{Average regret for DuplExp3 on BA and ER graphs with the same proportion of edges.}
  \label{dupl_er_ba}
 \end{figure}
 
-We tried applying the asymptotic \emph{revelation probabillity} to small ($250$ nodes) BA graphs, which led to the plot in Fig~\ref{dupl_ba_finite_ba}.
+We have tried to implement an adaptation of DuplEXP3 where the \emph{revelation probabillity} is known and computed using the true degree distribution of the BA graph to small ($50$ nodes) BA graphs, which led to the plot in Fig~\ref{dupl_ba_finite_ba}.
 
 \begin{figure}[h!]
-% \includegraphics{figures/dupl_ba_finite_ba.eps} % computed on godzilla
- \caption{Regret for multiple algorithms on BA graphs of size $250$.}
+\centering
+\includegraphics[height=7cm]{figures/50Kestim_BAdupl_big.pdf} % computed on godzilla
+ \caption{Regret for multiple algorithms on BA graphs of size $50$, with $m=7$.}
  \label{dupl_ba_finite_ba}
 \end{figure}
+
+ It is interesting to notice that the cumulated regret is slightly smaller than with the actual DuplEXP3 algorithm, but not so much smaller. This indicates that the loss of performance due to not having the full knowledge of $r$ in BA graphs is small; in other words, DuplEXP3 performs well at taking $r$ into account (even though $r$ is never explicitely estimated). 
+
+Comparison with the performance on ER graphs (Figure~\ref{dupl_er_ba}) can suggest that $r$ (and hence the idea of  DuplEXP3) is not so relevant to leverage side observation in BA graphs. In our current setting where the graph is unknown and changes at each iteration, it is hard to think of other quantity that could perform better. As one of the advantages to use BA graphs is to be closer to the behavior of social networks, it could be interesting to consider more stability of the graph structure over iterations, e.g. the nodes with high degree could reamin so over iterations. 
+
+
 
 
 \section{Conclusion}
