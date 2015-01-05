@@ -71,7 +71,7 @@ We will be considering two models of random graphs.
 \subsection{Different Graphs models}
 
 \subsubsection{Erdos-Renyi}
-Let $0\leq p \leq 1$. $E=ER(p)$ is the graph such that $(i \rightarrow j) \in E$ with probability $p$. Such graphs have very well understood properties. Their expected independence number $\bar{\alpha}$ is ????????.
+Let $0\leq p \leq 1$. $E=ER(p)$ is the graph such that $(i \rightarrow j) \in E$ with probability $p$. Such graphs have very well understood properties.
 Examples of ER graphs are given in Fig~\ref{er_ex}.
 
 \begin{figure}[hh!]
@@ -105,7 +105,7 @@ A Barabási-Albert (BA) graph is constructed dynamically by linking a new node t
 These graphs are scale-free, meaning that as they grow, their degree distribution follows a power law :
 $$P(k) \sim k^{-3}~\text{as}~N\rightarrow \infty$$
 
-There are several ways to add nodes to a Barabási-Albert network. We chose to add exactly $m$ edges for each node we added, leading to the exemples of graphs in figure~\ref{ba_ex}.
+There are several ways to add nodes to a Barabási-Albert network. We chose to add exactly $m$ edges for each node we added, leading to the exemples of graphs in figure~\ref{ba_ex}. Barabási-Albert graphs are quite good at modeling preferential attachment in social networks. \cite{wasserman1994social,}
 
 \begin{figure}[h!]
 \begin{center}
@@ -125,7 +125,7 @@ There are several ways to add nodes to a Barabási-Albert network. We chose to a
 \caption{Examples of Barabási-Albert graphs.}
  \label{ba_ex}
 \end{figure}
-Barabási are quite good at modeling preferential attachment in social networks. [REF NEEDED]
+
 
 
 \subsection{Objectives of our work}
@@ -162,7 +162,7 @@ As the computations time is prohibitive, it was not possible in this work to tes
 \section{BA graphs}
 \subsection{Empirical properties of BA graphs}
 \paragraph{Independence Number}
-Considering the induced hub structure on BA graphs, we conjecture that for the same edge proportion, the mean independence number is higher for BA graphs than for ER graphs.  Our conjecture holds true empirically, as shown in Fig~\ref{mean_alpha_ba_er}. Having a higher average independence number affects the bound shown by [REF NEEDED], and let's us infer that DuplExp3 won't work as well on BA graphs as it does on ER graphs.
+Considering the induced hub structure on BA graphs, we conjecture that for the same edge proportion, the mean independence number is higher for BA graphs than for ER graphs.  Our conjecture holds true empirically, as shown in Fig~\ref{mean_alpha_ba_er}. Having a higher average independence number affects the bounds of EXP3-IX (\cite{kocak2014efficient}), and let's us infer that DuplExp3 won't work as well on BA graphs as it does on ER graphs.
 
 \begin{figure}[h!]
 \centering
@@ -170,15 +170,6 @@ Considering the induced hub structure on BA graphs, we conjecture that for the s
  \caption{Average independence number for ER and BA graphs with equal edge proportion. We can see that the independence number of BA graphs stays above the independence number for ER graphs. The points and error bars correspond respectively to the mean and standard deviation obtained for 40 independant draws of a random graph of 50 nodes for each edge proportion, with varying edge proportion.}
  \label{mean_alpha_ba_er}
 \end{figure}
-
-\paragraph{Estimated r}
-Another conjecture is that the degree disribution for BA Graphs will lead the estimation process in DuplExp3 astray. Leading to worse results.
-
-
-proof of $\E[M_t] \leq \frac{1}{p}$ ??
-si pas proof et figure : figure
-si rien ... rien
-
 
 \subsection{Algorithms on BA graphs}
 \subsubsection{Asymptotic regime}
