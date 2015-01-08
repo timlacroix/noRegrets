@@ -9,9 +9,9 @@ from learners import *
 from graphs import *
 
 
-def do_run(learner, graph, losses, horizon=100, **kwargs):
+def do_run(learner, graph, losses, horizon=100):
     regrets = np.zeros(horizon)
-    learner.start(**kwargs)
+    learner.start()
     for t in range(horizon):
         current_losses = losses.getLosses()
         arm = learner.getArm(t)
@@ -26,9 +26,9 @@ def do_run(learner, graph, losses, horizon=100, **kwargs):
 
 
 def applyLearner(do_run_function, learner, graph, losses, horizon=100,
-                 repeat=4, n_jobs=4, **kwargs):
+                 repeat=4, n_jobs=4):
     regrets = Parallel(n_jobs=n_jobs, verbose=5)(
-        delayed(do_run_function)(learner, graph, losses, horizon, **kwargs)
+        delayed(do_run_function)(learner, graph, losses, horizon)
         for i in range(repeat)
     )
     # outputs = np.array(outputs)
@@ -146,7 +146,19 @@ def update_online(old_mean, new_value, n, old_M2):
 
 ## BA !
 n_arms = 50
+eps = 0.1
+n_iterations = 15000
+r = 0.5
+rep = 100
 graph = BAGraph(arms=n_arms, m=7, m0=7, r=0.3)
+losses = Losses([Bernoulli(x) for x in [0.5] + [0.5+eps]*(n_arms-1)])
+
+# estimation of K
+deg_list = list()
+for i in range(200):
+    graph.makeGraph()
+    deg_list += list(graph.nb_neighbors)
+K_estimate = np.mean(deg_list) / (n_arms - 1)
 
 learner = EXP3(gamma=0.01, eta=0.01, arms=n_arms)
 rr = applyLearner(do_run_dupl, learner, graph, losses,
@@ -156,7 +168,7 @@ regrets = applyLearner(
     do_run, learner, graph, losses,
     horizon=n_iterations, repeat=rep, n_jobs=1
 )
-learner = BAEXP3(gamma=0.0, eta=0.01, arms=n_arms)
+learner = BAEXP3(gamma=0.0, eta=0.01, K=K_estimate, arms=n_arms)
 other_regret = applyLearner(
     do_run, learner, graph, losses,
     horizon=n_iterations, repeat=rep, n_jobs=1
@@ -170,6 +182,6 @@ plt.plot(other_regret, '-', label='BAEXP3-BA', linewidth=2, color='purple')
 plt.legend(loc=2, fontsize=20)
 plt.xlabel('iterations', fontsize=20)
 plt.ylabel('cumulated regret', fontsize=20)
-plt.savefig(str(n_arms) + 'new_BAdupl_big_r' + str(r) + '.pdf')
+plt.savefig(str(n_arms) + 'Kestim_BAdupl_big.pdf')
 plt.close()
 
