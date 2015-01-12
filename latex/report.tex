@@ -204,8 +204,6 @@ It is interesting to notice that the cumulated regret is slightly smaller than w
 Comparison with the performance on ER graphs (Figure~\ref{dupl_er_ba}) can suggest that $r$ (and hence the idea of  DuplEXP3) is not so relevant to leverage side observation in BA graphs. In our current setting where the graph is unknown and changes at each iteration, it is hard to think of other quantity that could perform better. As one of the advantages to use BA graphs is to be closer to the behavior of social networks, it could be interesting to consider more stability of the graph structure over iterations, e.g. the nodes with high degree could remain so over iterations. 
 
 
-
-
 \section{Conclusion}
 We studied an alternative framework for bandit learning. We explored how the type of random graph affected the algorithm's results. DuplExp3 does a good job estimating the revelation probability, even when graphs are not from the Erdos-Renyi distribution. We empirically showed that average independence number for Barabási-Albert graphs was higher than those of Erdos-Renyi graphs. This difference may explain the difference of performance for DuplExp3 on graphs that share the same edge proportion, but with different structure. It is hard in our setup to really exploit the distinctive degree distribution of Barabási-Albert graphs, since a new graph is created by the environment at each iteration. In a setup closer to the reality of social networks, it might be interesting to study regret bounds when the graph is known, or follows the Barabási-Albert evolution at each iteration. 
 

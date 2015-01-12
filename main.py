@@ -146,6 +146,12 @@ def update_online(old_mean, new_value, n, old_M2):
 
 ## BA !
 n_arms = 50
+n_iterations = 15000
+rep = 100
+eps = 0.1
+
+losses = Losses([Bernoulli(x) for x in [0.5] + [0.5+eps]*(n_arms-1)])
+
 graph = BAGraph(arms=n_arms, m=7, m0=7, r=0.3)
 
 learner = EXP3(gamma=0.01, eta=0.01, arms=n_arms)
@@ -156,7 +162,7 @@ regrets = applyLearner(
     do_run, learner, graph, losses,
     horizon=n_iterations, repeat=rep, n_jobs=1
 )
-learner = BAEXP3(gamma=0.0, eta=0.01, arms=n_arms)
+learner = BAEXP3(gamma=0.0, eta=0.01, K=0.5, arms=n_arms)
 other_regret = applyLearner(
     do_run, learner, graph, losses,
     horizon=n_iterations, repeat=rep, n_jobs=1
@@ -170,6 +176,6 @@ plt.plot(other_regret, '-', label='BAEXP3-BA', linewidth=2, color='purple')
 plt.legend(loc=2, fontsize=20)
 plt.xlabel('iterations', fontsize=20)
 plt.ylabel('cumulated regret', fontsize=20)
-plt.savefig(str(n_arms) + 'new_BAdupl_big_r' + str(r) + '.pdf')
+plt.savefig(str(n_arms) + 'new_BAdupl_big.pdf')
 plt.close()
 
