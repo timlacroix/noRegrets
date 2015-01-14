@@ -83,7 +83,8 @@ class BAEXP3(BaseLearner):
     def __init__(self, gamma, eta, K, **kwargs):
         super(BAEXP3, self).__init__(**kwargs)
         self.gamma = gamma
-        self.eta = eta
+        self.Q = 0
+        self.eta=eta
         self.K = K
 
     def setK(self, arms):
@@ -96,9 +97,13 @@ class BAEXP3(BaseLearner):
         self.chosen = np.where(multinomial(1, self.probas))[0][0]
         return self.chosen
 
+    def getEta(self):
+        return np.sqrt(np.log(self.arms)/(self.arms + self.Q))
+
     def observe(self, observed, losses, t):
         estimated_loss = observed*losses/(self.probas + self.K*(1-self.probas))
-        self.weights *= np.exp(-self.eta*estimated_loss)
+        self.weights *= np.exp(-self.getEta()*estimated_loss)
+        self.Q += sum([self.probas[i]/(self.K+observed[i]) for i in range(self.arms)])
         return
 
 
