@@ -72,9 +72,39 @@
 \end{frame}
 \section{Introduction}
 \begin{frame}{The bandit with side observations setting}
+
+In a sequential learning setting, at each iteration, an arm is pulled and the losses of
+\textcolor{WildStrawberry}{the chosen arm and  its neighbors}
+are observed.
+
+	\begin{figure}[ht]
+	\centering
+	\includegraphics[width=0.4\textwidth]{labels_and_colors.pdf}	
+	\end{figure}
+
+Intermediate of the full information and the bandit setting
+\vspace{0.7cm}
+
+\textcolor{WildStrawberry}{\textbf{Challenge:}} leverage side observations in the setting where the graph is \textcolor{WildStrawberry}{random} and \textcolor{WildStrawberry}{changes at each iteration}.
 \end{frame}
 
 \begin{frame}{Random graph models}
+\begin{columns}
+	\begin{column}{.5\textwidth}
+		\begin{figure}[ht]
+			\centering
+			\includegraphics[width=\textwidth]{newER_graph_20.pdf}
+			\caption{Edn\H{o}s R\'enyi}
+		\end{figure}
+	\end{column}
+	\begin{column}{.5\textwidth}
+		\begin{figure}[ht]
+			\centering
+			\includegraphics[width=\textwidth]{newBA_graph_2.pdf}
+			\caption{Barab\'asi Albert}
+		\end{figure}
+	\end{column}
+\end{columns}
 \end{frame}
 
 \section{Algorithms}
